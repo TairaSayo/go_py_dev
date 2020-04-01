@@ -1,0 +1,55 @@
+---
+- hosts: ubuntu
+  connection: local 
+  become: true
+  become_method: sudo
+  tasks:
+  - name: Add Docker key
+    apt_key:
+      id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker repo
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu bionic stable
+      state: present
+
+  - name: Check and install required packages
+    apt:
+      update_cache: true
+      state: present
+      pkg:
+      - ca-certificates
+      - gnupg2
+      - software-properties-common
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - python3-pip
+      - git
+
+  - name: Download Go compiler
+    unarchive:
+     src: https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+     dest: /usr/local
+     remote_src: yes
+
+  - name: Add path to compiler for all users
+    copy:
+      src: /vagrant/go_env.sh
+      dest: /etc/profile.d/go_env.sh
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: Docker group exist
+    group:
+      name: docker
+      state: present
+
+  - name: Vagrant user in Docker group
+    user:
+      name: vagrant
+      groups: docker
+      append: true

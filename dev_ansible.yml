@@ -31,7 +31,7 @@
 
   - name: Download Go compiler
     unarchive:
-     src: https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+     src: https://golang.org/dl/go1.17.3.linux-amd64.tar.gz
      dest: /usr/local
      remote_src: yes
 
